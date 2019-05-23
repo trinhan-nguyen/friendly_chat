@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:friendlychat/model/chat_message.dart';
+import 'package:friendlychat/theme/theme_data.dart';
 
 void main() {
   runApp(new FriendlychatApp());
@@ -10,6 +12,9 @@ class FriendlychatApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: "Friendlychat",
+      theme: defaultTargetPlatform == TargetPlatform.iOS
+          ? kIOSTheme
+          : kDefaultTheme,
       home: new ChatScreen(),
     );
   }
