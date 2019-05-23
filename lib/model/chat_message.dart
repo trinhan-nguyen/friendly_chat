@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 const String _name = "Nhan Nguyen";
 
 class ChatMessage extends StatelessWidget {
-  ChatMessage({this.text, this.animationController});
   final String text;
   final AnimationController animationController;
+
+  ChatMessage({this.text, this.animationController});
+
   @override
   Widget build(BuildContext context) {
     return new SizeTransition(
