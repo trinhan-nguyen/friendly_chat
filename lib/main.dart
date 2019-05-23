@@ -4,14 +4,14 @@ import 'package:friendlychat/model/chat_message.dart';
 import 'package:friendlychat/theme/theme_data.dart';
 
 void main() {
-  runApp(new FriendlychatApp());
+  runApp(new FriendlyChatApp());
 }
 
-class FriendlychatApp extends StatelessWidget {
+class FriendlyChatApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: "Friendlychat",
+      title: "Friendly Chat",
       theme: defaultTargetPlatform == TargetPlatform.iOS
           ? kIOSTheme
           : kDefaultTheme,
