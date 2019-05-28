@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,7 @@ import 'package:friendlychat/model/chat_message.dart';
 class ChatScreen extends StatefulWidget {
   final _title;
 
-  ChatScreen(String title): _title = title;
+  ChatScreen(String title) : _title = title;
 
   @override
   State createState() => ChatScreenState(_title);
@@ -14,11 +15,20 @@ class ChatScreen extends StatefulWidget {
 
 class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final _title;
-  final List<ChatMessage> _messages = <ChatMessage>[];
-  final TextEditingController _textController = TextEditingController();
+  final List<ChatMessage> _messages;
+  final TextEditingController _textController;
+  final DatabaseReference _messageDatabaseReference;
+
   bool _isComposing = false;
 
-  ChatScreenState(String title): _title = title;
+
+  ChatScreenState(String title)
+      : _title = title,
+        _isComposing = false,
+        _messages = <ChatMessage>[],
+        _textController = TextEditingController(),
+        _messageDatabaseReference =
+            FirebaseDatabase.instance.reference().child("messages");
 
   Widget _buildTextComposer() {
     return IconTheme(
@@ -36,29 +46,28 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     });
                   },
                   onSubmitted: _handleSubmitted,
-                  decoration: InputDecoration.collapsed(
-                      hintText: "Send a message"),
+                  decoration:
+                      InputDecoration.collapsed(hintText: "Send a message"),
                 ),
               ),
               Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: Theme.of(context).platform == TargetPlatform.iOS ?
-                  CupertinoButton(
-                    child: Text("Send"),
-                    onPressed: _isComposing
-                        ? () =>  _handleSubmitted(_textController.text)
-                        : null,) :
-                  IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: _isComposing
-                        ? () => _handleSubmitted(_textController.text)
-                        : null,
-                  )
-              )
+                  child: Theme.of(context).platform == TargetPlatform.iOS
+                      ? CupertinoButton(
+                          child: Text("Send"),
+                          onPressed: _isComposing
+                              ? () => _handleSubmitted(_textController.text)
+                              : null,
+                        )
+                      : IconButton(
+                          icon: Icon(Icons.send),
+                          onPressed: _isComposing
+                              ? () => _handleSubmitted(_textController.text)
+                              : null,
+                        ))
             ],
           ),
-        )
-    );
+        ));
   }
 
   void _handleSubmitted(String text) {
@@ -75,6 +84,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         vsync: this,
       ),
     );
+
+    _messageDatabaseReference.push().set(message.toMap());
+
     setState(() {
       _messages.insert(0, message);
     });
@@ -101,18 +113,16 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             ),
             Divider(height: 1.0),
             Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor),
+              decoration: BoxDecoration(color: Theme.of(context).cardColor),
               child: _buildTextComposer(),
             ),
           ],
         ),
         decoration: Theme.of(context).platform == TargetPlatform.iOS
             ? BoxDecoration(
-            border: Border(
-              top: BorderSide(color: Colors.grey[200]),
-            )
-        )
+                border: Border(
+                top: BorderSide(color: Colors.grey[200]),
+              ))
             : null,
       ),
     );

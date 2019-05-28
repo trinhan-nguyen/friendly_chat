@@ -8,6 +8,13 @@ class ChatMessage extends StatelessWidget {
 
   ChatMessage({this.text, this.animationController});
 
+  Map<String, dynamic> toMap() {
+    return {
+      'text': text,
+      'username': _name
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return new SizeTransition(
@@ -23,7 +30,7 @@ class ChatMessage extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 16.0),
                 child: new CircleAvatar(child: new Text(_name[0])),
               ),
-              new Expanded (
+              new Expanded(
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -37,7 +44,6 @@ class ChatMessage extends StatelessWidget {
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 }
