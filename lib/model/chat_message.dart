@@ -6,13 +6,12 @@ class ChatMessage extends StatelessWidget {
   final String text;
   final AnimationController animationController;
 
-  ChatMessage({this.text, this.animationController});
+  ChatMessage(String text, AnimationController animationController)
+      : text = text,
+        animationController = animationController;
 
   Map<String, dynamic> toMap() {
-    return {
-      'text': text,
-      'username': _name
-    };
+    return {'text': text, 'username': _name};
   }
 
   @override

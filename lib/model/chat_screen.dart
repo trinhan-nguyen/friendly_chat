@@ -28,7 +28,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         _messages = <ChatMessage>[],
         _textController = TextEditingController(),
         _messageDatabaseReference =
-            FirebaseDatabase.instance.reference().child("messages");
+            FirebaseDatabase.instance.reference().child("messages") {
+    _messageDatabaseReference.onChildAdded.listen(_onMessageAdded);
+  }
 
   Widget _buildTextComposer() {
     return IconTheme(
@@ -64,33 +66,38 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           onPressed: _isComposing
                               ? () => _handleSubmitted(_textController.text)
                               : null,
-                        ))
+                        )
+              )
             ],
           ),
         ));
   }
 
-  void _handleSubmitted(String text) {
-    _textController.clear();
-
-    setState(() {
-      _isComposing = false;
-    });
-
-    ChatMessage message = ChatMessage(
-      text: text,
-      animationController: AnimationController(
-        duration: Duration(milliseconds: 700),
-        vsync: this,
-      ),
-    );
-
-    _messageDatabaseReference.push().set(message.toMap());
-
+  void _onMessageAdded(Event event) {
+    ChatMessage message = createMessage(event.snapshot.value["text"]);
     setState(() {
       _messages.insert(0, message);
     });
     message.animationController.forward();
+  }
+
+  void _handleSubmitted(String text) {
+    _textController.clear();
+    setState(() {
+      _isComposing = false;
+    });
+
+    _messageDatabaseReference.push().set(createMessage(text).toMap());
+  }
+
+  ChatMessage createMessage(String text) {
+    return ChatMessage(
+      text,
+      AnimationController(
+        duration: Duration(milliseconds: 500),
+        vsync: this,
+      ),
+    );
   }
 
   @override
