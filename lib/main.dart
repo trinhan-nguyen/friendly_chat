@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:friendlychat/service/authentication.dart';
 import 'package:friendlychat/theme/theme_data.dart';
-
 import 'model/login_screen.dart';
 
 const title = "Friendly Chat";
@@ -19,7 +19,7 @@ class FriendlyChatApp extends StatelessWidget {
       theme: defaultTargetPlatform == TargetPlatform.iOS
           ? kIOSTheme
           : kDefaultTheme,
-      home: LoginScreen(),
+      home: LoginScreen(auth: Auth()),
     );
   }
 }
