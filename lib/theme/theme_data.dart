@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 final ThemeData kIOSTheme = new ThemeData(
-  primarySwatch: Colors.orange,
+  primarySwatch: Colors.blue,
   primaryColor: Colors.grey[100],
   primaryColorBrightness: Brightness.light,
 );
 
 final ThemeData kDefaultTheme = new ThemeData(
-  primarySwatch: Colors.orange,
-  accentColor: Colors.orangeAccent[400],
+  primarySwatch: Colors.blue,
+  accentColor: Colors.blueAccent[400],
 );
