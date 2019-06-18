@@ -3,11 +3,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:friendlychat/model/chat_message.dart';
+import 'package:friendlychat/service/authentication.dart';
 
 class ChatScreen extends StatefulWidget {
-  final _title;
+  ChatScreen(String title, {Key key, this.auth, this.userId, this.onSignedOut})
+      : _title = title,
+        super(key: key);
 
-  ChatScreen(String title) : _title = title;
+  final _title;
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
+  final String userId;
 
   @override
   State createState() => ChatScreenState(_title);
@@ -25,7 +31,6 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final DatabaseReference _messageDatabaseReference;
 
   bool _isComposing = false;
-
 
   ChatScreenState(String title)
       : _title = title,
@@ -71,8 +76,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           onPressed: _isComposing
                               ? () => _handleSubmitted(_textController.text)
                               : null,
-                        )
-              )
+                        ))
             ],
           ),
         ));
@@ -110,7 +114,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text(_title),
-        actions: <Widget> [
+        actions: <Widget>[
           PopupMenuButton<Choice>(
             onSelected: _select,
             itemBuilder: (BuildContext context) {
@@ -161,6 +165,19 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _select(Choice choice) {
+    switch (choice.title) {
+      case 'Sign out': _signOut();
+      break;
+    }
+  }
+
+  void _signOut() async {
+    try {
+      await widget.auth.signOut();
+      widget.onSignedOut();
+    } catch (e) {
+      print(e);
+    }
   }
 }
 
