@@ -13,6 +13,11 @@ class ChatScreen extends StatefulWidget {
   State createState() => ChatScreenState(_title);
 }
 
+const List<Choice> choices = const <Choice>[
+  const Choice('Sign out'),
+  const Choice('Settings')
+];
+
 class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final _title;
   final List<ChatMessage> _messages;
@@ -105,6 +110,19 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text(_title),
+        actions: <Widget> [
+          PopupMenuButton<Choice>(
+            onSelected: _select,
+            itemBuilder: (BuildContext context) {
+              return choices.map((Choice choice) {
+                return PopupMenuItem<Choice>(
+                  value: choice,
+                  child: Text(choice.title),
+                );
+              }).toList();
+            },
+          ),
+        ],
         elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
       ),
       body: Container(
@@ -141,4 +159,13 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       message.animationController.dispose();
     super.dispose();
   }
+
+  void _select(Choice choice) {
+  }
+}
+
+class Choice {
+  const Choice(this.title);
+
+  final String title;
 }
