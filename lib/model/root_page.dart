@@ -32,20 +32,19 @@ class _RootPageState extends State<RootPage> {
           _userId = user?.uid;
         }
         authStatus =
-        user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
+            user?.uid == null ? AuthStatus.NOT_LOGGED_IN : AuthStatus.LOGGED_IN;
       });
     });
   }
 
   void _onLoggedIn() {
-    widget.auth.getCurrentUser().then((user){
+    widget.auth.getCurrentUser().then((user) {
       setState(() {
         _userId = user.uid.toString();
       });
     });
     setState(() {
       authStatus = AuthStatus.LOGGED_IN;
-
     });
   }
 
@@ -79,8 +78,13 @@ class _RootPageState extends State<RootPage> {
         break;
       case AuthStatus.LOGGED_IN:
         if (_userId.length > 0 && _userId != null) {
-          return ChatScreen('Friendly Chat');
-        } else return _buildWaitingScreen();
+          return ChatScreen(
+            'Friendly Chat',
+            auth: widget.auth,
+            onSignedOut: _onSignedOut,
+          );
+        } else
+          return _buildWaitingScreen();
         break;
       default:
         return _buildWaitingScreen();
