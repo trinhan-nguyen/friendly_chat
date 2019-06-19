@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:friendlychat/model/chat_message.dart';
 import 'package:friendlychat/service/authentication.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatScreen extends StatefulWidget {
   ChatScreen(String title, {Key key, this.auth, this.userId, this.onSignedOut})
@@ -29,6 +33,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final List<ChatMessage> _messages;
   final TextEditingController _textController;
   final DatabaseReference _messageDatabaseReference;
+  final StorageReference _photoStorageReference;
 
   bool _isComposing = false;
 
@@ -38,7 +43,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         _messages = <ChatMessage>[],
         _textController = TextEditingController(),
         _messageDatabaseReference =
-            FirebaseDatabase.instance.reference().child("messages") {
+            FirebaseDatabase.instance.reference().child("messages"),
+        _photoStorageReference =
+            FirebaseStorage.instance.ref().child("chat_photos") {
     _messageDatabaseReference.onChildAdded.listen(_onMessageAdded);
   }
 
@@ -64,19 +71,25 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               ),
               Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: Theme.of(context).platform == TargetPlatform.iOS
-                      ? CupertinoButton(
-                          child: Text("Send"),
-                          onPressed: _isComposing
-                              ? () => _handleSubmitted(_textController.text)
-                              : null,
-                        )
-                      : IconButton(
-                          icon: Icon(Icons.send),
-                          onPressed: _isComposing
-                              ? () => _handleSubmitted(_textController.text)
-                              : null,
-                        ))
+                  child: Row(
+                    children: <Widget>[
+                      IconButton(
+                          icon: Icon(Icons.camera_alt), onPressed: _sendImage),
+                      Theme.of(context).platform == TargetPlatform.iOS
+                          ? CupertinoButton(
+                              child: Text("Send"),
+                              onPressed: _isComposing
+                                  ? () => _handleSubmitted(_textController.text)
+                                  : null,
+                            )
+                          : IconButton(
+                              icon: Icon(Icons.send),
+                              onPressed: _isComposing
+                                  ? () => _handleSubmitted(_textController.text)
+                                  : null,
+                            ),
+                    ],
+                  ))
             ],
           ),
         ));
@@ -97,6 +110,11 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
 
     _messageDatabaseReference.push().set(createMessage(text).toMap());
+  }
+
+  void _sendImage() async {
+    File image = await ImagePicker.pickImage(source: ImageSource.camera);
+    _photoStorageReference.putFile(image);
   }
 
   ChatMessage createMessage(String text) {
@@ -166,8 +184,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   void _select(Choice choice) {
     switch (choice.title) {
-      case 'Sign out': _signOut();
-      break;
+      case 'Sign out':
+        _signOut();
+        break;
     }
   }
 
