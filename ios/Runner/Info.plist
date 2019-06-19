@@ -41,5 +41,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow Friendly Chat App to access photos, media and files on your device?</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow Friendly Chat App to take pictures and record video?</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow Friendly Chat App to access your microphone?</string>
 </dict>
 </plist>
