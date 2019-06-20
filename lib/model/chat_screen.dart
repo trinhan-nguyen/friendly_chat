@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:friendlychat/model/chat_message.dart';
 import 'package:friendlychat/service/authentication.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatScreen extends StatefulWidget {
   ChatScreen(String title, {Key key, this.auth, this.userId, this.onSignedOut})
@@ -74,7 +75,13 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   child: Row(
                     children: <Widget>[
                       IconButton(
-                          icon: Icon(Icons.camera_alt), onPressed: _sendImage),
+                        icon: Icon(Icons.camera_alt),
+                        onPressed: _sendImageFromCamera,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.image),
+                        onPressed: _sendImageFromGallery,
+                      ),
                       Theme.of(context).platform == TargetPlatform.iOS
                           ? CupertinoButton(
                               child: Text("Send"),
@@ -112,9 +119,20 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _messageDatabaseReference.push().set(createMessage(text).toMap());
   }
 
-  void _sendImage() async {
-    File image = await ImagePicker.pickImage(source: ImageSource.camera);
-    _photoStorageReference.putFile(image);
+  void _sendImage(ImageSource imageSource) async {
+    File image = await ImagePicker.pickImage(source: imageSource);
+    final String fileName = Uuid().v4();
+    StorageReference photoRef = _photoStorageReference.child(fileName);
+    final StorageUploadTask uploadTask = photoRef.putFile(image);
+    final StorageTaskSnapshot downloadUrl = await uploadTask.onComplete;
+  }
+
+  void _sendImageFromCamera() async {
+    _sendImage(ImageSource.camera);
+  }
+
+  void _sendImageFromGallery() async {
+    _sendImage(ImageSource.gallery);
   }
 
   ChatMessage createMessage(String text) {
