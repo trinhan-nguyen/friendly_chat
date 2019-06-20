@@ -10,6 +10,8 @@ import 'package:friendlychat/service/authentication.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
+const String _name = "Nhan Nguyen";
+
 class ChatScreen extends StatefulWidget {
   ChatScreen(String title, {Key key, this.auth, this.userId, this.onSignedOut})
       : _title = title,
@@ -137,8 +139,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   ChatMessage createMessage(String text) {
     return ChatMessage(
-      text,
-      AnimationController(
+      text: text,
+      userName: _name,
+      animationController: AnimationController(
         duration: Duration(milliseconds: 500),
         vsync: this,
       ),
