@@ -1,42 +1,48 @@
 import 'package:flutter/material.dart';
 
-const String _name = "Nhan Nguyen";
-
 class ChatMessage extends StatelessWidget {
   final String text;
+  final String imageUrl;
+  final String userName;
   final AnimationController animationController;
 
-  ChatMessage(String text, AnimationController animationController)
+  ChatMessage(
+      {String text,
+      String imageUrl,
+      String userName,
+      AnimationController animationController})
       : text = text,
+        imageUrl = imageUrl,
+        userName = userName,
         animationController = animationController;
 
   Map<String, dynamic> toMap() {
-    return {'text': text, 'username': _name};
+    return {'text': text, 'username': userName};
   }
 
   @override
   Widget build(BuildContext context) {
-    return new SizeTransition(
-        sizeFactor: new CurvedAnimation(
-            parent: animationController, curve: Curves.easeOut),
+    return SizeTransition(
+        sizeFactor:
+            CurvedAnimation(parent: animationController, curve: Curves.easeOut),
         axisAlignment: 0.0,
-        child: new Container(
+        child: Container(
           margin: const EdgeInsets.symmetric(vertical: 10.0),
-          child: new Row(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              new Container(
+              Container(
                 margin: const EdgeInsets.only(right: 16.0),
-                child: new CircleAvatar(child: new Text(_name[0])),
+                child: CircleAvatar(child: Text(userName[0])),
               ),
-              new Expanded(
-                child: new Column(
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    new Text(_name, style: Theme.of(context).textTheme.subhead),
-                    new Container(
+                    Text(userName, style: Theme.of(context).textTheme.subhead),
+                    Container(
                       margin: const EdgeInsets.only(top: 5.0),
-                      child: new Text(text),
+                      child: Text(text),
                     ),
                   ],
                 ),
