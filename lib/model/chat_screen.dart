@@ -105,10 +105,17 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _onMessageAdded(Event event) {
-    ChatMessage message = createMessage(event.snapshot.value["text"]);
+    final text = event.snapshot.value["text"];
+    final imageUrl = event.snapshot.value["imageUrl"];
+
+    ChatMessage message = imageUrl == null
+        ? _createMessageFromText(text)
+        : _createMessageFromImage(imageUrl);
+
     setState(() {
       _messages.insert(0, message);
     });
+
     message.animationController.forward();
   }
 
@@ -118,7 +125,8 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       _isComposing = false;
     });
 
-    _messageDatabaseReference.push().set(createMessage(text).toMap());
+    final ChatMessage message = _createMessageFromText(text);
+    _messageDatabaseReference.push().set(message.toMap());
   }
 
   void _sendImage(ImageSource imageSource) async {
@@ -127,6 +135,10 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     StorageReference photoRef = _photoStorageReference.child(fileName);
     final StorageUploadTask uploadTask = photoRef.putFile(image);
     final StorageTaskSnapshot downloadUrl = await uploadTask.onComplete;
+    final ChatMessage message = _createMessageFromImage(
+      await downloadUrl.ref.getDownloadURL(),
+    );
+    _messageDatabaseReference.push().set(message.toMap());
   }
 
   void _sendImageFromCamera() async {
@@ -137,16 +149,23 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _sendImage(ImageSource.gallery);
   }
 
-  ChatMessage createMessage(String text) {
-    return ChatMessage(
-      text: text,
-      userName: _name,
-      animationController: AnimationController(
-        duration: Duration(milliseconds: 500),
-        vsync: this,
-      ),
-    );
-  }
+  ChatMessage _createMessageFromText(String text) => ChatMessage(
+        text: text,
+        username: _name,
+        animationController: AnimationController(
+          duration: Duration(milliseconds: 180),
+          vsync: this,
+        ),
+      );
+
+  ChatMessage _createMessageFromImage(String imageUrl) => ChatMessage(
+        imageUrl: imageUrl,
+        username: _name,
+        animationController: AnimationController(
+          duration: Duration(milliseconds: 90),
+          vsync: this,
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
