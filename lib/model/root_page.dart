@@ -5,12 +5,13 @@ import 'chat_screen.dart';
 import 'login_screen.dart';
 
 class RootPage extends StatefulWidget {
-  RootPage({this.auth});
+  RootPage({this.title, this.auth});
 
+  final String title;
   final BaseAuth auth;
 
   @override
-  State<StatefulWidget> createState() => _RootPageState();
+  State<StatefulWidget> createState() => _RootPageState(title);
 }
 
 enum AuthStatus {
@@ -20,8 +21,12 @@ enum AuthStatus {
 }
 
 class _RootPageState extends State<RootPage> {
+  final String _title;
+
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
   String _userId = "";
+
+  _RootPageState(String title) : _title = title;
 
   @override
   void initState() {
@@ -72,6 +77,7 @@ class _RootPageState extends State<RootPage> {
         break;
       case AuthStatus.NOT_LOGGED_IN:
         return LoginScreen(
+          title: _title,
           auth: widget.auth,
           onSignedIn: _onLoggedIn,
         );

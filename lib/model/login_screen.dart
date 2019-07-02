@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:friendlychat/service/authentication.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({this.auth, this.onSignedIn});
+  LoginScreen({this.title, this.auth, this.onSignedIn});
 
+  final String title;
   final BaseAuth auth;
   final VoidCallback onSignedIn;
 
   @override
-  State<StatefulWidget> createState() => _LoginSignUpPageState();
+  State<StatefulWidget> createState() => _LoginSignUpPageState(title);
 }
 
 enum FormMode { LOGIN, SIGNUP }
 
 class _LoginSignUpPageState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final String _title;
 
   String _email;
   String _password;
@@ -24,6 +26,8 @@ class _LoginSignUpPageState extends State<LoginScreen> {
   FormMode _formMode = FormMode.LOGIN;
   bool _isIos;
   bool _isLoading;
+
+  _LoginSignUpPageState(String title) : _title = title;
 
   // Check if form is valid before perform login or signup
   bool _validateAndSave() {
@@ -57,10 +61,11 @@ class _LoginSignUpPageState extends State<LoginScreen> {
           _isLoading = false;
         });
 
-        if (userId != null && userId.length > 0 && _formMode == FormMode.LOGIN) {
+        if (userId != null &&
+            userId.length > 0 &&
+            _formMode == FormMode.LOGIN) {
           widget.onSignedIn();
         }
-
       } catch (e) {
         print('Error: $e');
         setState(() {
@@ -73,7 +78,6 @@ class _LoginSignUpPageState extends State<LoginScreen> {
       }
     }
   }
-
 
   @override
   void initState() {
@@ -103,7 +107,7 @@ class _LoginSignUpPageState extends State<LoginScreen> {
     _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Flutter login demo'),
+          title: Text(_title),
         ),
         body: Stack(
           children: <Widget>[
@@ -113,11 +117,14 @@ class _LoginSignUpPageState extends State<LoginScreen> {
         ));
   }
 
-  Widget _showCircularProgress(){
+  Widget _showCircularProgress() {
     if (_isLoading) {
       return Center(child: CircularProgressIndicator());
-    } return Container(height: 0.0, width: 0.0,);
-
+    }
+    return Container(
+      height: 0.0,
+      width: 0.0,
+    );
   }
 
   void _showVerifyEmailSentDialog() {
@@ -142,7 +149,7 @@ class _LoginSignUpPageState extends State<LoginScreen> {
     );
   }
 
-  Widget _showBody(){
+  Widget _showBody() {
     return Container(
         padding: EdgeInsets.all(16.0),
         child: Form(
@@ -241,10 +248,9 @@ class _LoginSignUpPageState extends State<LoginScreen> {
     return FlatButton(
       child: _formMode == FormMode.LOGIN
           ? Text('Create an account',
-          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300))
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300))
           : Text('Have an account? Sign in',
-          style:
-          TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
       onPressed: _formMode == FormMode.LOGIN
           ? _changeFormToSignUp
           : _changeFormToLogin,
@@ -258,13 +264,14 @@ class _LoginSignUpPageState extends State<LoginScreen> {
           height: 40.0,
           child: RaisedButton(
             elevation: 5.0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0)),
             color: Colors.blue,
             child: _formMode == FormMode.LOGIN
                 ? Text('Login',
-                style: TextStyle(fontSize: 20.0, color: Colors.white))
+                    style: TextStyle(fontSize: 20.0, color: Colors.white))
                 : Text('Create account',
-                style: TextStyle(fontSize: 20.0, color: Colors.white)),
+                    style: TextStyle(fontSize: 20.0, color: Colors.white)),
             onPressed: _validateAndSubmit,
           ),
         ));
