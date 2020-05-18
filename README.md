@@ -2,6 +2,8 @@
 
 A new Flutter real-time messaging application.
 
+<img src="Login.png" width="36%"> <img src="Main.png" width="36%">
+
 Here is an article that can help you build this application on your own: https://medium.com/@ngtrnhan1205/flutter-friendly-chat-app-a-simple-real-time-chat-app-c6519a604681
 
 ## Getting Started
